@@ -1,0 +1,379 @@
+USE [master]
+GO
+/****** Object:  Database [VENTANILLA_SA]    Script Date: 30/04/2019 13:49:22 ******/
+CREATE DATABASE [VENTANILLA_SA]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'VENTANILLA_SA', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\VENTANILLA_SA.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'VENTANILLA_SA_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\VENTANILLA_SA_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+GO
+ALTER DATABASE [VENTANILLA_SA] SET COMPATIBILITY_LEVEL = 140
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [VENTANILLA_SA].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET AUTO_CLOSE ON 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET  MULTI_USER 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [VENTANILLA_SA] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [VENTANILLA_SA] SET QUERY_STORE = OFF
+GO
+USE [VENTANILLA_SA]
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET IDENTITY_CACHE = ON;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET LEGACY_CARDINALITY_ESTIMATION = OFF;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET LEGACY_CARDINALITY_ESTIMATION = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 0;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET MAXDOP = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET PARAMETER_SNIFFING = ON;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET PARAMETER_SNIFFING = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET QUERY_OPTIMIZER_HOTFIXES = OFF;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET QUERY_OPTIMIZER_HOTFIXES = PRIMARY;
+GO
+USE [VENTANILLA_SA]
+GO
+/****** Object:  Table [dbo].[CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CATEGORIA](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](50) NOT NULL,
+	[Estado] [char](1) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PRODUCTO](
+	[COD] [char](8) NOT NULL,
+	[NOM_PRO] [varchar](180) NOT NULL,
+	[ID_CATEGORIA] [int] NOT NULL,
+	[PRECIO] [numeric](7, 2) NOT NULL,
+	[STOCK] [int] NOT NULL,
+	[IMAGEN] [varchar](50) NOT NULL,
+	[COD_USU_CREADOR] [char](8) NOT NULL,
+	[fecha_creacion] [date] NOT NULL,
+	[estado] [char](1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[COD] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[USUARIO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[USUARIO](
+	[COD] [char](8) NOT NULL,
+	[NOMBRE] [varchar](30) NOT NULL,
+	[APELLIDO] [varchar](30) NOT NULL,
+	[cargo] [varchar](15) NOT NULL,
+	[CORREO] [varchar](25) NOT NULL,
+	[telefono] [varchar](15) NOT NULL,
+	[Fech_creacion] [date] NOT NULL,
+	[estado] [char](1) NOT NULL,
+	[CONTRA] [varchar](30) NOT NULL,
+	[Nombre_de_login] [varchar](30) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[COD] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[CATEGORIA] ON 
+
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (1, N'Llantas', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (2, N'Aros', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (3, N'Bujias', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (4, N'Baterias', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (5, N'Amortiguadores', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (6, N'Discos de Freno', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (7, N'Espejos', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (8, N'Herramientas', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (9, N'Timones', N'A')
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (10, N'Tubo de escape', N'A')
+SET IDENTITY_INSERT [dbo].[CATEGORIA] OFF
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0001   ', N'Amortiguador Monroe', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguador_Monroe.png', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0002   ', N'Amortiguador Nitro Charger', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguador_NitroCharger.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0003   ', N'Amortiguador Corven', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguadores-Corven.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0004   ', N'Aro BMW', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_BMW.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0005   ', N'Aro BXC', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_BXC.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0006   ', N'Aro The Eagle', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_TheEagle.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0007   ', N'Bateria Bosch', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Bosch.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0008   ', N'Bateria Capsa', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-capsa.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0009   ', N'Bateria Enerjet', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Enerjet.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0010   ', N'Bateria Etna', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Etna.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0011   ', N'Bujia Ngk', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujia-Ngk.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0012   ', N'Bujia Bosch', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujias-Bosch.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0013   ', N'Bujias Denso', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujias-denso.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0014   ', N'Disco de freno PorsChe', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_Porsche.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0015   ', N'Disco de freno VEE', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_VEE.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0016   ', N'Disco de freno WilWood', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_WilWood.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0017   ', N'Espejo Black', 7, CAST(50.00 AS Numeric(7, 2)), 50, N'Espejo_Black.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login]) VALUES (N'AD0001  ', N'Pedro', N'Garcia', N'Administrador', N'Pgarcia@gmail.com', N'979227052', CAST(N'2019-04-30' AS Date), N'A', N'ad123', N'Admin')
+ALTER TABLE [dbo].[PRODUCTO]  WITH CHECK ADD FOREIGN KEY([COD_USU_CREADOR])
+REFERENCES [dbo].[USUARIO] ([COD])
+GO
+ALTER TABLE [dbo].[PRODUCTO]  WITH CHECK ADD FOREIGN KEY([ID_CATEGORIA])
+REFERENCES [dbo].[CATEGORIA] ([ID])
+GO
+/****** Object:  StoredProcedure [dbo].[A_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[A_CATEGORIA]
+(@nom varchar(50))
+as
+insert into CATEGORIA values(@nom,'A')
+GO
+/****** Object:  StoredProcedure [dbo].[A_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[A_PRODUCTO](
+@id char(8),
+@nom varchar(180),
+@id_cat int,
+@pre float,
+@stock int,
+@img varchar(50)
+)
+as
+INSERT INTO producto VALUES (@id,@nom,@id_cat,@pre,@stock,@img,'AD0001',GETDATE(),'A')
+GO
+/****** Object:  StoredProcedure [dbo].[A_USUARIO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[A_USUARIO](
+@cod char(8),
+@nom varchar(50),
+@ape varchar(50),
+@correo varchar(50),
+@Telefono varchar(50),
+@nomUsu varchar(50),
+@contra varchar(50)
+)
+as
+insert into usuario values (@cod,@nom,@ape,'Cliente',@correo,@Telefono,GETDATE(),'A',@contra,@nomUsu);
+GO
+/****** Object:  StoredProcedure [dbo].[B_ProdxNom]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[B_ProdxNom](
+@nom varchar(50)
+)
+as
+select*from PRODUCTO where estado='A' and NOM_PRO like (@nom+'%')
+GO
+/****** Object:  StoredProcedure [dbo].[B_ProdxNomADMIN]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[B_ProdxNomADMIN](
+@nom varchar(50)
+)
+as
+select*from PRODUCTO where NOM_PRO like (@nom+'%')
+GO
+/****** Object:  StoredProcedure [dbo].[C_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[C_CATEGORIA]
+as
+select*from CATEGORIA order by nombre
+GO
+/****** Object:  StoredProcedure [dbo].[C_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create  procedure [dbo].[C_PRODUCTO](
+@id char(8))
+as
+select * from producto where COD=@id
+GO
+/****** Object:  StoredProcedure [dbo].[E_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[E_CATEGORIA]
+(@id int,@est char )
+as
+update CATEGORIA
+set Estado=@est
+where ID=@id
+GO
+/****** Object:  StoredProcedure [dbo].[E_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[E_PRODUCTO](
+@id char(8),
+@est char(1)
+)
+as
+update PRODUCTO
+set estado=@est
+where COD=@id
+GO
+/****** Object:  StoredProcedure [dbo].[G_COD_PROD]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[G_COD_PROD]
+as
+begin 
+declare @codprod char(6)
+set @codprod=(select MAX(cod) from producto)
+set @codprod='P'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codprod,'000'),4)+1),4)
+select @codprod as codem
+end
+GO
+/****** Object:  StoredProcedure [dbo].[G_COD_USU]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[G_COD_USU]
+as
+begin 
+declare @codusu char(6)
+set @codusu=(select MAX(cod) from usuario)
+set @codusu='U'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codusu,'000'),4)+1),4)
+select @codusu as codem
+end
+GO
+/****** Object:  StoredProcedure [dbo].[M_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[M_CATEGORIA]
+(@id int,@nom varchar(50) )
+as
+update CATEGORIA
+set nombre=@nom
+where ID=@id
+GO
+/****** Object:  StoredProcedure [dbo].[M_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[M_PRODUCTO](
+@id char(8), @nombre varchar(180), @id_cat int, @pre numeric(7,2), @stc int
+)
+as
+update PRODUCTO
+set NOM_PRO=@nombre, PRECIO=@pre , ID_CATEGORIA=@id_cat,STOCK=@stc
+where COD=@id
+GO
+/****** Object:  StoredProcedure [dbo].[U_LOGIN]    Script Date: 30/04/2019 13:49:22 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[U_LOGIN](
+@tipo varchar(15),
+@contra varchar(30)
+)
+as
+select*from USUARIO where Nombre_de_login=@tipo and CONTRA=@contra
+GO
+USE [master]
+GO
+ALTER DATABASE [VENTANILLA_SA] SET  READ_WRITE 
+GO
+
+Select * from usuario
+select * from producto
+INSERT INTO usuario VALUES ('AD0001','Pedro','Garcia','Administrador','Pgarcia@gmail.com','979227052',GETDATE(),'A','ad123','Admin');
+
+select * from producto
