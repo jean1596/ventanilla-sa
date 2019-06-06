@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [VENTANILLA_SA]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  Database [VENTANILLA_SA]    Script Date: 30/05/2019 8:38:14 a. m. ******/
 CREATE DATABASE [VENTANILLA_SA]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -25,7 +25,7 @@ ALTER DATABASE [VENTANILLA_SA] SET ANSI_WARNINGS OFF
 GO
 ALTER DATABASE [VENTANILLA_SA] SET ARITHABORT OFF 
 GO
-ALTER DATABASE [VENTANILLA_SA] SET AUTO_CLOSE ON 
+ALTER DATABASE [VENTANILLA_SA] SET AUTO_CLOSE OFF 
 GO
 ALTER DATABASE [VENTANILLA_SA] SET AUTO_SHRINK OFF 
 GO
@@ -59,7 +59,7 @@ ALTER DATABASE [VENTANILLA_SA] SET READ_COMMITTED_SNAPSHOT OFF
 GO
 ALTER DATABASE [VENTANILLA_SA] SET HONOR_BROKER_PRIORITY OFF 
 GO
-ALTER DATABASE [VENTANILLA_SA] SET RECOVERY SIMPLE 
+ALTER DATABASE [VENTANILLA_SA] SET RECOVERY FULL 
 GO
 ALTER DATABASE [VENTANILLA_SA] SET  MULTI_USER 
 GO
@@ -73,31 +73,13 @@ ALTER DATABASE [VENTANILLA_SA] SET TARGET_RECOVERY_TIME = 60 SECONDS
 GO
 ALTER DATABASE [VENTANILLA_SA] SET DELAYED_DURABILITY = DISABLED 
 GO
+EXEC sys.sp_db_vardecimal_storage_format N'VENTANILLA_SA', N'ON'
+GO
 ALTER DATABASE [VENTANILLA_SA] SET QUERY_STORE = OFF
 GO
 USE [VENTANILLA_SA]
 GO
-ALTER DATABASE SCOPED CONFIGURATION SET IDENTITY_CACHE = ON;
-GO
-ALTER DATABASE SCOPED CONFIGURATION SET LEGACY_CARDINALITY_ESTIMATION = OFF;
-GO
-ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET LEGACY_CARDINALITY_ESTIMATION = PRIMARY;
-GO
-ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 0;
-GO
-ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET MAXDOP = PRIMARY;
-GO
-ALTER DATABASE SCOPED CONFIGURATION SET PARAMETER_SNIFFING = ON;
-GO
-ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET PARAMETER_SNIFFING = PRIMARY;
-GO
-ALTER DATABASE SCOPED CONFIGURATION SET QUERY_OPTIMIZER_HOTFIXES = OFF;
-GO
-ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET QUERY_OPTIMIZER_HOTFIXES = PRIMARY;
-GO
-USE [VENTANILLA_SA]
-GO
-/****** Object:  Table [dbo].[CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  Table [dbo].[CATEGORIA]    Script Date: 30/05/2019 8:38:14 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -112,7 +94,24 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  Table [dbo].[detalleventa]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[detalleventa](
+	[codigoVenta] [int] NOT NULL,
+	[codigoProducto] [char](8) NOT NULL,
+	[cantidad] [int] NOT NULL,
+	[total] [numeric](7, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[codigoVenta] ASC,
+	[codigoProducto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PRODUCTO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -133,7 +132,19 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[USUARIO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  Table [dbo].[TB_Rotacion]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TB_Rotacion](
+	[ID_PROD] [char](8) NULL,
+	[Cantidad_vent] [int] NULL,
+	[Cantidad_comp] [int] NULL,
+	[fecha] [date] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[USUARIO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -149,50 +160,399 @@ CREATE TABLE [dbo].[USUARIO](
 	[estado] [char](1) NOT NULL,
 	[CONTRA] [varchar](30) NOT NULL,
 	[Nombre_de_login] [varchar](30) NOT NULL,
+	[Direccion] [varchar](100) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[COD] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[venta]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[venta](
+	[codigoVenta] [int] IDENTITY(1,1) NOT NULL,
+	[Cod_usu] [char](8) NOT NULL,
+	[fecha] [date] NOT NULL,
+	[Direccion] [varchar](100) NULL,
+	[Estado] [varchar](15) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[codigoVenta] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 SET IDENTITY_INSERT [dbo].[CATEGORIA] ON 
-
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (1, N'Llantas', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (2, N'Aros', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (3, N'Bujias', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (4, N'Baterias', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (5, N'Amortiguadores', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (6, N'Discos de Freno', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (7, N'Espejos', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (8, N'Herramientas', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (9, N'Timones', N'A')
-INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (10, N'Tubo de escape', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (12, N'Llantas', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (13, N'Baterias', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (14, N'Radiadores', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (15, N'Espejos', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (16, N'Aros', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (17, N'Amortiguadores', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (18, N'Bujias', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (19, N'Tubos de escape', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (20, N'Timones', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (21, N'Herramientas', N'A')
+GO
+INSERT [dbo].[CATEGORIA] ([ID], [nombre], [Estado]) VALUES (1002, N'Discos de Freno', N'A')
+GO
 SET IDENTITY_INSERT [dbo].[CATEGORIA] OFF
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0001   ', N'Amortiguador Monroe', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguador_Monroe.png', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0002   ', N'Amortiguador Nitro Charger', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguador_NitroCharger.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0003   ', N'Amortiguador Corven', 5, CAST(50.00 AS Numeric(7, 2)), 50, N'Amortiguadores-Corven.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0004   ', N'Aro BMW', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_BMW.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0005   ', N'Aro BXC', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_BXC.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0006   ', N'Aro The Eagle', 2, CAST(50.00 AS Numeric(7, 2)), 50, N'Aro_TheEagle.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0007   ', N'Bateria Bosch', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Bosch.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0008   ', N'Bateria Capsa', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-capsa.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0009   ', N'Bateria Enerjet', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Enerjet.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0010   ', N'Bateria Etna', 4, CAST(50.00 AS Numeric(7, 2)), 50, N'bateria-Etna.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0011   ', N'Bujia Ngk', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujia-Ngk.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0012   ', N'Bujia Bosch', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujias-Bosch.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0013   ', N'Bujias Denso', 3, CAST(50.00 AS Numeric(7, 2)), 50, N'bujias-denso.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0014   ', N'Disco de freno PorsChe', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_Porsche.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0015   ', N'Disco de freno VEE', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_VEE.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0016   ', N'Disco de freno WilWood', 6, CAST(50.00 AS Numeric(7, 2)), 50, N'DiscoFreno_WilWood.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0017   ', N'Espejo Black', 7, CAST(50.00 AS Numeric(7, 2)), 50, N'Espejo_Black.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
-INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login]) VALUES (N'AD0001  ', N'Pedro', N'Garcia', N'Administrador', N'Pgarcia@gmail.com', N'979227052', CAST(N'2019-04-30' AS Date), N'A', N'ad123', N'Admin')
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (29, N'P0015   ', 1, CAST(130.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (30, N'P0004   ', 1, CAST(60.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (30, N'P0020   ', 3, CAST(181.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (31, N'P0003   ', 1, CAST(80.30 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (32, N'P0005   ', 3, CAST(255.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (33, N'P0011   ', 1, CAST(50.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (34, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (34, N'P0011   ', 1, CAST(50.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (34, N'P0013   ', 1, CAST(30.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (34, N'P0020   ', 1, CAST(60.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (35, N'P0021   ', 1, CAST(5.90 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (35, N'P0022   ', 1, CAST(5.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (35, N'P0027   ', 1, CAST(65.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (36, N'P0011   ', 1, CAST(50.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (36, N'P0019   ', 1, CAST(160.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (36, N'P0026   ', 1, CAST(60.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (37, N'P0003   ', 1, CAST(80.30 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (37, N'P0015   ', 2, CAST(261.20 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (37, N'P0016   ', 1, CAST(400.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (38, N'P0005   ', 1, CAST(85.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (39, N'P0012   ', 1, CAST(60.90 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1028, N'P0022   ', 1, CAST(5.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1029, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1029, N'P0013   ', 1, CAST(30.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1029, N'P0025   ', 1, CAST(53.80 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1030, N'P0015   ', 1, CAST(130.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1030, N'P0023   ', 1, CAST(6.20 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1030, N'P0028   ', 1, CAST(70.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1031, N'P0017   ', 1, CAST(21.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1032, N'P0017   ', 1, CAST(21.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1033, N'P0001   ', 3, CAST(181.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1033, N'P0010   ', 1, CAST(106.40 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1033, N'P0028   ', 1, CAST(70.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1034, N'P0008   ', 1, CAST(106.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1034, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1035, N'P0029   ', 1, CAST(100.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1036, N'P0003   ', 1, CAST(40.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1037, N'P0008   ', 1, CAST(106.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1037, N'P0022   ', 1, CAST(5.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1037, N'P0025   ', 1, CAST(53.80 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1038, N'P0029   ', 2, CAST(200.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1039, N'P0011   ', 3, CAST(151.80 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1039, N'P0017   ', 3, CAST(109.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1039, N'P0021   ', 1, CAST(5.90 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1039, N'P0022   ', 5, CAST(27.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1040, N'P0017   ', 5, CAST(182.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (1040, N'P0021   ', 4, CAST(23.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2029, N'P0011   ', 1, CAST(50.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2030, N'P0004   ', 2, CAST(120.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2030, N'P0022   ', 2, CAST(11.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2030, N'P0025   ', 4, CAST(215.20 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2030, N'P0029   ', 4, CAST(400.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2031, N'P0003   ', 4, CAST(160.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2031, N'P0010   ', 2, CAST(212.80 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2031, N'P0017   ', 1, CAST(36.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2031, N'P0018   ', 1, CAST(50.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2033, N'P0001   ', 1, CAST(60.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2034, N'P0005   ', 1, CAST(85.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2034, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2035, N'P0015   ', 1, CAST(130.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2036, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2037, N'P0001   ', 1, CAST(60.50 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2037, N'P0009   ', 1, CAST(109.00 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2037, N'P0014   ', 1, CAST(95.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[detalleventa] ([codigoVenta], [codigoProducto], [cantidad], [total]) VALUES (2037, N'P0015   ', 1, CAST(130.60 AS Numeric(7, 2)))
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0001   ', N'Amortiguador Monroe', 17, CAST(60.50 AS Numeric(7, 2)), 44, N'Amortiguador_Monroe.png', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0002   ', N'Amortiguador Nitro Charger', 17, CAST(123.00 AS Numeric(7, 2)), 59, N'Amortiguador_NitroCharger.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0003   ', N'Amortiguador Corven', 17, CAST(40.00 AS Numeric(7, 2)), 50, N'Amortiguadores-Corven.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0004   ', N'Aro BMW', 16, CAST(60.00 AS Numeric(7, 2)), 47, N'Aro_BMW.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0005   ', N'Aro BXC', 16, CAST(85.00 AS Numeric(7, 2)), 44, N'Aro_BXC.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0006   ', N'Aro The Eagle', 16, CAST(76.50 AS Numeric(7, 2)), 50, N'Aro_TheEagle.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0007   ', N'Bateria Bosch', 13, CAST(105.20 AS Numeric(7, 2)), 50, N'bateria-Bosch.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0008   ', N'Bateria capsa', 13, CAST(106.00 AS Numeric(7, 2)), 48, N'bateria-capsa.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0009   ', N'Bateria Enerjet', 13, CAST(109.00 AS Numeric(7, 2)), 44, N'bateria-Enerjet.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0010   ', N'Bateria Etna', 13, CAST(106.40 AS Numeric(7, 2)), 50, N'bateria-Etna.jpg', N'AD0001  ', CAST(N'2019-04-30' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0011   ', N'Juego de dados', 21, CAST(50.60 AS Numeric(7, 2)), 10, N'JDados_Nans.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0012   ', N'Llave de ruedas cruz', 21, CAST(60.90 AS Numeric(7, 2)), 49, N'llave de ruedas.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0013   ', N'Llave de ruedas simple', 21, CAST(30.50 AS Numeric(7, 2)), 48, N'LavedRueda_Simple.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0014   ', N'Juego de  Dados TRUPER', 21, CAST(95.60 AS Numeric(7, 2)), 49, N'JDados_Truper.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0015   ', N'Disco de freno Porsche', 1002, CAST(130.60 AS Numeric(7, 2)), 394, N'DiscoFreno_Porsche.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0016   ', N'Dados', 21, CAST(400.60 AS Numeric(7, 2)), 48, N'JDados_Proxxon.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0017   ', N'Gata xd', 21, CAST(36.50 AS Numeric(7, 2)), 50, N'Gata_TotalTools.jpg', N'AD0001  ', CAST(N'2019-05-01' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0018   ', N'Timon DrifTing', 20, CAST(50.00 AS Numeric(7, 2)), 44, N'Timon_DrifTing.jpg', N'AD0001  ', CAST(N'2019-05-05' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0019   ', N'Timon_ReusTuning', 20, CAST(160.00 AS Numeric(7, 2)), 49, N'Timon_ReusTuning.jpg', N'AD0001  ', CAST(N'2019-05-07' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0020   ', N'Timon_SpeedMax', 20, CAST(60.50 AS Numeric(7, 2)), 46, N'Timon_SpeedMax.jpg', N'AD0001  ', CAST(N'2019-05-07' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0021   ', N'bujia-Ngk', 18, CAST(5.90 AS Numeric(7, 2)), 49, N'bujia-Ngk.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0022   ', N'bujias-Bosch', 18, CAST(5.50 AS Numeric(7, 2)), 48, N'bujias-Bosch.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0023   ', N'bujias-denso', 18, CAST(6.20 AS Numeric(7, 2)), 49, N'bujias-denso.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0024   ', N'DiscoFreno_VEE', 1002, CAST(99.50 AS Numeric(7, 2)), 50, N'DiscoFreno_VEE.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0025   ', N'DiscoFreno_WilWood', 1002, CAST(53.80 AS Numeric(7, 2)), 44, N'DiscoFreno_WilWood.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0026   ', N'TuboDeEscape_TKOSM', 19, CAST(60.00 AS Numeric(7, 2)), 49, N'TuboDeEscape_TKOSM.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0027   ', N'TuboDeEscape_Escorpion', 19, CAST(65.00 AS Numeric(7, 2)), 49, N'TuboDeEscape_Escorpion.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0028   ', N'TuboDeEscape_Arrow', 19, CAST(70.00 AS Numeric(7, 2)), 48, N'TuboDeEscape_Arrow.jpg', N'AD0001  ', CAST(N'2019-05-08' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0029   ', N'Llanta Firestone', 12, CAST(100.00 AS Numeric(7, 2)), 15, N'Llanta_firestone.jpg', N'AD0001  ', CAST(N'2019-05-28' AS Date), N'A')
+GO
+INSERT [dbo].[PRODUCTO] ([COD], [NOM_PRO], [ID_CATEGORIA], [PRECIO], [STOCK], [IMAGEN], [COD_USU_CREADOR], [fecha_creacion], [estado]) VALUES (N'P0030   ', N'Llanta_LimaCaucho', 12, CAST(99.00 AS Numeric(7, 2)), 50, N'Llanta_LimaCaucho.jpg', N'AD0001  ', CAST(N'2019-05-30' AS Date), N'A')
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0004   ', 2, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0022   ', 2, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0025   ', 4, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0029   ', 4, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0018   ', 1, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0029   ', 0, 4, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0010   ', 0, 3, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0001   ', 1, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0005   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0009   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0015   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0009   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0009   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0015   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0014   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0010   ', 2, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0003   ', 4, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0017   ', 1, 0, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0017   ', 0, 1, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0003   ', 0, 4, CAST(N'2019-04-10' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0018   ', 0, 15, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0004   ', 0, 2, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0001   ', 1, 0, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0003   ', 0, 6, CAST(N'2019-05-29' AS Date))
+GO
+INSERT [dbo].[TB_Rotacion] ([ID_PROD], [Cantidad_vent], [Cantidad_comp], [fecha]) VALUES (N'P0030   ', 0, 50, CAST(N'2019-05-30' AS Date))
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'AD0001  ', N'Pedro', N'Garcia', N'Administrador', N'Pgarcia@gmail.com', N'979227052', CAST(N'2019-04-28' AS Date), N'A', N'ad123', N'Admin', NULL)
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'U0002   ', N'Kevin', N'Cavero Robles', N'Cliente', N'KCR@gmail.com', N'979227053', CAST(N'2019-04-28' AS Date), N'A', N'ad123', N'KCR', N'AV. los portales')
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'U0003   ', N'Miguel', N'Grau Seminario', N'Cliente', N'MGrau@gmail.com', N'979227053', CAST(N'2019-05-01' AS Date), N'A', N'ad123', N'MGS', N'AV. los Alamos')
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'U0005   ', N'Jean', N'Marquez', N'Cliente', N'JM@gmail.com', N'986325147', CAST(N'2019-05-07' AS Date), N'A', N'ad123', N'JMV', N'AV. las Palmeras')
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'U0006   ', N'Jeff ', N'cordero', N'Cliente', N'jeff@gmail.com', N'979227053', CAST(N'2019-05-08' AS Date), N'A', N'ad123', N'jcb', N'AV. las Anclas')
+GO
+INSERT [dbo].[USUARIO] ([COD], [NOMBRE], [APELLIDO], [cargo], [CORREO], [telefono], [Fech_creacion], [estado], [CONTRA], [Nombre_de_login], [Direccion]) VALUES (N'U0007   ', N'Peluchin', N'Cavero Robles', N'Cliente', N'PLU@gmail.com', N'979227052', CAST(N'2019-05-29' AS Date), N'A', N'ad123', N'PCR', N'AV. Los Peluches')
+GO
+SET IDENTITY_INSERT [dbo].[venta] ON 
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (28, N'AD0001  ', CAST(N'2019-05-08' AS Date), NULL, N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (29, N'U0005   ', CAST(N'2019-05-08' AS Date), N'AV. las Palmeras', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (30, N'U0005   ', CAST(N'2019-05-08' AS Date), N'AV. las Palmeras', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (31, N'U0002   ', CAST(N'2019-05-08' AS Date), N'AV. los portales', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (32, N'U0005   ', CAST(N'2019-05-08' AS Date), N'AV. las Palmeras', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (33, N'U0002   ', CAST(N'2019-05-08' AS Date), N'AV. los portales', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (34, N'U0002   ', CAST(N'2019-05-08' AS Date), N'AV. los portales', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (35, N'U0002   ', CAST(N'2019-05-09' AS Date), N'AV. los portales', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (36, N'U0005   ', CAST(N'2019-05-09' AS Date), N'AV. las Palmeras', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (37, N'U0006   ', CAST(N'2019-05-09' AS Date), N'AV. las Anclas', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (38, N'AD0001  ', CAST(N'2019-05-09' AS Date), NULL, N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (39, N'U0002   ', CAST(N'2019-05-09' AS Date), N'AV. los portales', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1027, N'U0002   ', CAST(N'2019-05-22' AS Date), N'AV. los portales', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1028, N'U0002   ', CAST(N'2019-05-22' AS Date), N'AV. los portales', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1029, N'U0005   ', CAST(N'2019-05-22' AS Date), N'AV. las Palmeras', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1030, N'U0006   ', CAST(N'2019-05-22' AS Date), N'AV. las Anclas', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1031, N'U0003   ', CAST(N'2019-04-20' AS Date), N'AV. los Alamos', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1032, N'U0003   ', CAST(N'2019-03-20' AS Date), N'AV. los Alamos', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1033, N'U0003   ', CAST(N'2019-05-22' AS Date), N'AV. los Alamos', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1034, N'U0003   ', CAST(N'2019-05-27' AS Date), N'AV. los Alamos', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1035, N'U0002   ', CAST(N'2019-05-28' AS Date), N'AV. los portales', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1036, N'U0006   ', CAST(N'2019-05-28' AS Date), N'AV. las Anclas', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1037, N'U0005   ', CAST(N'2019-05-28' AS Date), N'AV. las Palmeras', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1038, N'U0003   ', CAST(N'2019-05-28' AS Date), N'AV. los Alamos', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1039, N'U0006   ', CAST(N'2019-05-28' AS Date), N'AV. las Anclas', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (1040, N'U0005   ', CAST(N'2019-05-28' AS Date), N'AV. las Palmeras', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2029, N'U0005   ', CAST(N'2019-05-29' AS Date), N'AV. las Palmeras', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2030, N'U0003   ', CAST(N'2019-05-29' AS Date), N'AV. los Alamos', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2031, N'U0002   ', CAST(N'2019-05-29' AS Date), N'AV. los portales', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2033, N'U0007   ', CAST(N'2019-05-29' AS Date), N'AV. Los Peluches', N'Entregado')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2034, N'U0003   ', CAST(N'2019-05-30' AS Date), N'AV. los Alamos', N'null')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2035, N'U0003   ', CAST(N'2019-05-30' AS Date), N'AV. los Alamos', NULL)
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2036, N'U0003   ', CAST(N'2019-05-30' AS Date), N'AV. los Alamos', N'Para Enviar')
+GO
+INSERT [dbo].[venta] ([codigoVenta], [Cod_usu], [fecha], [Direccion], [Estado]) VALUES (2037, N'U0002   ', CAST(N'2019-05-30' AS Date), N'AV. los portales', N'Para Enviar')
+GO
+SET IDENTITY_INSERT [dbo].[venta] OFF
+GO
+ALTER TABLE [dbo].[detalleventa]  WITH CHECK ADD FOREIGN KEY([codigoVenta])
+REFERENCES [dbo].[venta] ([codigoVenta])
+GO
+ALTER TABLE [dbo].[detalleventa]  WITH CHECK ADD FOREIGN KEY([codigoProducto])
+REFERENCES [dbo].[PRODUCTO] ([COD])
+GO
 ALTER TABLE [dbo].[PRODUCTO]  WITH CHECK ADD FOREIGN KEY([COD_USU_CREADOR])
 REFERENCES [dbo].[USUARIO] ([COD])
 GO
 ALTER TABLE [dbo].[PRODUCTO]  WITH CHECK ADD FOREIGN KEY([ID_CATEGORIA])
 REFERENCES [dbo].[CATEGORIA] ([ID])
 GO
-/****** Object:  StoredProcedure [dbo].[A_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+ALTER TABLE [dbo].[TB_Rotacion]  WITH CHECK ADD FOREIGN KEY([ID_PROD])
+REFERENCES [dbo].[PRODUCTO] ([COD])
+GO
+ALTER TABLE [dbo].[venta]  WITH CHECK ADD FOREIGN KEY([Cod_usu])
+REFERENCES [dbo].[USUARIO] ([COD])
+GO
+/****** Object:  StoredProcedure [dbo].[A_CATEGORIA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -202,71 +562,104 @@ create procedure [dbo].[A_CATEGORIA]
 as
 insert into CATEGORIA values(@nom,'A')
 GO
-/****** Object:  StoredProcedure [dbo].[A_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[A_DETALLEVENTA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[A_PRODUCTO](
+CREATE procedure [dbo].[A_DETALLEVENTA](
+@C_Vent int,
+@C_ProD char(8),
+@cant int,
+@total numeric(7,2)
+)
+as
+insert into detalleventa values(@C_Vent,@C_ProD,@cant,@total)
+
+GO
+/****** Object:  StoredProcedure [dbo].[A_PRODUCTO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[A_PRODUCTO](
 @id char(8),
 @nom varchar(180),
 @id_cat int,
 @pre float,
-@stock int,
 @img varchar(50)
 )
 as
-INSERT INTO producto VALUES (@id,@nom,@id_cat,@pre,@stock,@img,'AD0001',GETDATE(),'A')
+INSERT INTO producto VALUES (@id,@nom,@id_cat,@pre,0,@img,'AD0001',GETDATE(),'A')
 GO
-/****** Object:  StoredProcedure [dbo].[A_USUARIO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[A_USUARIO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[A_USUARIO](
+CREATE procedure [dbo].[A_USUARIO](
 @cod char(8),
 @nom varchar(50),
 @ape varchar(50),
 @correo varchar(50),
 @Telefono varchar(50),
 @nomUsu varchar(50),
-@contra varchar(50)
+@contra varchar(50),
+@dir varchar(100)
 )
 as
-insert into usuario values (@cod,@nom,@ape,'Cliente',@correo,@Telefono,GETDATE(),'A',@contra,@nomUsu);
+insert into usuario values (@cod,@nom,@ape,'Cliente',@correo,@Telefono,GETDATE(),'A',@contra,@nomUsu,@dir);
 GO
-/****** Object:  StoredProcedure [dbo].[B_ProdxNom]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[A_VENTA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[B_ProdxNom](
+CREATE procedure [dbo].[A_VENTA](
+@cod int output,
+@C_USU char(8),
+@dir_usu varchar(100)
+)
+as 
+begin
+select @cod=IsNULL(MAX(codigoVenta),0)+1 from venta
+insert into venta values(@C_USU,getdate(),@dir_usu,'Para Enviar')
+end
+GO
+/****** Object:  StoredProcedure [dbo].[B_ProdxNom]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[B_ProdxNom](
 @nom varchar(50)
 )
 as
-select*from PRODUCTO where estado='A' and NOM_PRO like (@nom+'%')
+select*from PRODUCTO P inner join CATEGORIA c
+on P.ID_CATEGORIA=c.ID where P.estado='A' and P.STOCK>=1 and P.NOM_PRO like (@nom+'%') or c.nombre like (@nom+'%')
 GO
-/****** Object:  StoredProcedure [dbo].[B_ProdxNomADMIN]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[B_ProdxNomADMIN]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[B_ProdxNomADMIN](
+CREATE procedure [dbo].[B_ProdxNomADMIN](
 @nom varchar(50)
 )
 as
-select*from PRODUCTO where NOM_PRO like (@nom+'%')
+select*from PRODUCTO P inner join CATEGORIA c
+on P.ID_CATEGORIA=c.ID where P.NOM_PRO like (@nom+'%') or c.nombre like (@nom+'%')
 GO
-/****** Object:  StoredProcedure [dbo].[C_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[C_CATEGORIA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[C_CATEGORIA]
+CREATE procedure [dbo].[C_CATEGORIA]
 as
 select*from CATEGORIA order by nombre
 GO
-/****** Object:  StoredProcedure [dbo].[C_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[C_PRODUCTO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -276,7 +669,7 @@ create  procedure [dbo].[C_PRODUCTO](
 as
 select * from producto where COD=@id
 GO
-/****** Object:  StoredProcedure [dbo].[E_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[E_CATEGORIA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -288,7 +681,7 @@ update CATEGORIA
 set Estado=@est
 where ID=@id
 GO
-/****** Object:  StoredProcedure [dbo].[E_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[E_PRODUCTO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -302,7 +695,7 @@ update PRODUCTO
 set estado=@est
 where COD=@id
 GO
-/****** Object:  StoredProcedure [dbo].[G_COD_PROD]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[G_COD_PROD]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -316,7 +709,7 @@ set @codprod='P'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codprod,'000'),4)+1),4)
 select @codprod as codem
 end
 GO
-/****** Object:  StoredProcedure [dbo].[G_COD_USU]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[G_COD_USU]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -330,7 +723,7 @@ set @codusu='U'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codusu,'000'),4)+1),4)
 select @codusu as codem
 end
 GO
-/****** Object:  StoredProcedure [dbo].[M_CATEGORIA]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[M_CATEGORIA]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -342,20 +735,198 @@ update CATEGORIA
 set nombre=@nom
 where ID=@id
 GO
-/****** Object:  StoredProcedure [dbo].[M_PRODUCTO]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[M_PRODUCTO]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[M_PRODUCTO](
-@id char(8), @nombre varchar(180), @id_cat int, @pre numeric(7,2), @stc int
+CREATE procedure [dbo].[M_PRODUCTO](
+@id char(8), @nombre varchar(180), @id_cat int, @pre numeric(7,2)
 )
 as
 update PRODUCTO
-set NOM_PRO=@nombre, PRECIO=@pre , ID_CATEGORIA=@id_cat,STOCK=@stc
+set NOM_PRO=@nombre, PRECIO=@pre , ID_CATEGORIA=@id_cat
 where COD=@id
 GO
-/****** Object:  StoredProcedure [dbo].[U_LOGIN]    Script Date: 30/04/2019 13:49:22 ******/
+/****** Object:  StoredProcedure [dbo].[M_stock_Prod]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[M_stock_Prod](
+@id char(8),
+@cant int
+)
+as
+begin
+update PRODUCTO
+set STOCK=(STOCK-@cant)
+where COD=@id
+end
+GO
+/****** Object:  StoredProcedure [dbo].[prueba]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[prueba](
+@n1 int,
+@n2 int,
+@result int output
+)
+as
+set @result=@n1+@n2;
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Camb_Est_ped]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[SP_Camb_Est_ped]
+(@cod int)
+as
+begin
+update venta
+set Estado='Entregado'
+where codigoVenta=@cod
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Cliente_del_Mes]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE procedure [dbo].[SP_Cliente_del_Mes](
+@n_mes varchar(15))
+as
+begin
+Set Language spanish
+select Concat(U.NOMBRE,' ',U.APELLIDO) as nombre, sum(D.total) as total  from venta v inner join USUARIO U 
+on v.Cod_usu=U.COD inner join detalleventa D 
+on v.codigoVenta=D.codigoVenta where  datename(month,fecha)=@n_mes
+group by Concat(U.NOMBRE,' ',U.APELLIDO) order by sum(D.total) desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Compra_Rotacion]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[SP_Compra_Rotacion](
+@id char(8),
+@cant_comp int
+)
+as
+begin
+insert into TB_Rotacion values(@id,0,@cant_comp,getdate())
+update PRODUCTO
+set STOCK=STOCK+@cant_comp
+where COD=@id
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_DET_PED]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[SP_DET_PED](
+@cod int
+)
+as
+begin
+select D.codigoVenta,P.NOM_PRO,D.cantidad from detalleventa D inner join PRODUCTO P
+on D.codigoProducto=P.COD where codigoVenta=@cod
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_His_compra]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[SP_His_compra](
+@F_INI varchar(10),
+@F_FIN varchar(10)
+)
+as
+begin
+select P.NOM_PRO,sum(R.Cantidad_comp) as Nro_Compras from TB_Rotacion R inner join PRODUCTO P
+on R.ID_PROD=P.COD where R.Cantidad_comp>=1 and R.fecha between @F_INI and @F_FIN 
+group by P.NOM_PRO order by sum(R.Cantidad_comp) desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_PED_Clientes]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[SP_PED_Clientes](
+@cod char(8)
+)
+as
+begin
+select V.codigoVenta,concat(U.NOMBRE,' ',U.APELLIDO) as nombre,V.fecha,V.Direccion,V.estado from VENTA V inner join USUARIO U
+on V.Cod_usu=U.Cod where V.Cod_usu=@cod order by V.fecha desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Pedidos]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[SP_Pedidos]
+as
+begin
+select V.codigoVenta,concat(U.NOMBRE,' ',U.APELLIDO) as nombre,V.fecha,V.Direccion,V.estado from VENTA V inner join USUARIO U
+on V.Cod_usu=U.Cod where V.Estado='Para Enviar' or V.Estado='Para Recoger' order by V.fecha desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Prod_Mas_vendido]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE procedure [dbo].[SP_Prod_Mas_vendido](
+@F_INI varchar(10),
+@F_FIN varchar(10)
+)
+as
+begin
+select P.NOM_PRO,sum(cantidad) from detalleventa D inner join venta V 
+on D.codigoVenta=V.codigoVenta inner join PRODUCTO P
+on D.codigoProducto=P.COD where V.fecha between @F_INI and @F_FIN
+group by P.NOM_PRO order by sum(cantidad) desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Prod_Mayor_Movimiento]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[SP_Prod_Mayor_Movimiento]
+as
+begin
+select R.ID_PROD,P.NOM_PRO,sum(R.Cantidad_vent) as Ventas_totales,sum(R.Cantidad_comp) as Compras_totales,sum(R.Cantidad_vent)+sum(R.Cantidad_comp) as total from TB_Rotacion R inner join PRODUCTO P
+on R.ID_PROD=P.COD  
+group by R.ID_PROD,P.NOM_PRO order by total desc
+end
+GO
+/****** Object:  StoredProcedure [dbo].[SP_Ven_Rotacion]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[SP_Ven_Rotacion](
+@id char(8),
+@cant_vent int
+)
+as
+begin
+insert into TB_Rotacion values(@id,@cant_vent,0,getdate())
+end
+GO
+/****** Object:  StoredProcedure [dbo].[U_LOGIN]    Script Date: 30/05/2019 8:38:15 a. m. ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -367,13 +938,380 @@ create procedure [dbo].[U_LOGIN](
 as
 select*from USUARIO where Nombre_de_login=@tipo and CONTRA=@contra
 GO
+/****** Object:  StoredProcedure [dbo].[Venta_del_dia]    Script Date: 30/05/2019 8:38:15 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[Venta_del_dia]
+as
+begin
+select V.codigoVenta,Concat(U.NOMBRE,' ',U.APELLIDO) as Nombre ,Convert(date,getdate()),sum(D.cantidad) as Nro_Prod_comprados,sum(D.total) as Importe_total from venta V inner join USUARIO U
+on V.Cod_usu=U.COD inner join detalleventa D
+on V.codigoVenta=D.codigoVenta where V.fecha=Convert(date,SYSDATETIME()) 
+group by V.codigoVenta,U.NOMBRE,U.APELLIDO,V.fecha order by sum(D.cantidad) desc
+end
+GO
 USE [master]
 GO
 ALTER DATABASE [VENTANILLA_SA] SET  READ_WRITE 
 GO
 
-Select * from usuario
-select * from producto
+
+USE VENTANILLA_SA
+GO
+
+CREATE TABLE USUARIO(
+COD CHAR(8) PRIMARY KEY NOT NULL,
+NOMBRE VARCHAR(30) NOT NULL,
+APELLIDO VARCHAR(30) NOT NULL,
+cargo VARCHAR(15)NOT NULL,
+CORREO VARCHAR(25)NOT NULL,
+telefono VARCHAR(15)NOT NULL,
+Fech_creacion date not null,
+estado char(1)not null, 
+CONTRA VARCHAR(30)NOT NULL, 
+Nombre_de_login varchar(30)not null
+Direccion varchar(100)
+)
+
+create table CATEGORIA(
+ID int primary key identity not null,
+nombre varchar(50) not null,
+Estado char
+)
+
+CREATE TABLE PRODUCTO(
+COD char(8) PRIMARY KEY NOT NULL,
+ NOM_PRO VARCHAR(180) NOT NULL,
+ ID_CATEGORIA INT foreign key references CATEGORIA not null,
+ PRECIO NUMERIC(7,2) NOT NULL,
+ STOCK INT NOT NULL,
+ IMAGEN varchar(50) NOT NULL,
+ COD_USU_CREADOR char(8) foreign key references usuario not null,
+ fecha_creacion date not null,
+ estado char(1) not null
+)
+CREATE TABLE venta (
+ 
+codigoVenta int identity PRIMARY KEY NOT NULL,
+  
+Cod_usu char(8) NOT NULL foreign key references Usuario,
+  
+fecha date NOT NULL,
+Direccion varchar(100),
+Estado varchar(15)
+)
+
+CREATE TABLE detalleventa (
+  
+codigoVenta int NOT NULL references venta,
+  
+codigoProducto Char(8) NOT NULL references Producto ,
+  
+cantidad int NOT NULL,
+  
+total numeric(7,2) NOT NULL,
+  
+PRIMARY KEY (codigoVenta,codigoProducto)
+
+) 
+
+
+
 INSERT INTO usuario VALUES ('AD0001','Pedro','Garcia','Administrador','Pgarcia@gmail.com','979227052',GETDATE(),'A','ad123','Admin');
 
-select * from producto
+
+--CRUD CATEGORIA
+
+create procedure A_CATEGORIA
+(@nom varchar(50))
+as
+insert into CATEGORIA values(@nom,'A')
+go
+
+create procedure C_CATEGORIA
+as
+select*from CATEGORIA order by nombre
+go
+
+create procedure M_CATEGORIA
+(@id int,@nom varchar(50) )
+as
+update CATEGORIA
+set nombre=@nom
+where ID=@id
+go
+
+create procedure E_CATEGORIA
+(@id int,@est char )
+as
+update CATEGORIA
+set Estado=@est
+where ID=@id
+go
+
+
+--USUARIO
+
+create proc G_COD_USU
+as
+begin 
+declare @codusu char(6)
+set @codusu=(select MAX(cod) from usuario)
+set @codusu='U'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codusu,'000'),4)+1),4)
+select @codusu as codem
+end
+go
+
+
+
+create procedure A_USUARIO(
+@cod char(8),
+@nom varchar(50),
+@ape varchar(50),
+@correo varchar(50),
+@Telefono varchar(50),
+@nomUsu varchar(50),
+@contra varchar(50),
+@dir varchar(100)
+)
+as
+insert into usuario values (@cod,@nom,@ape,'Cliente',@correo,@Telefono,GETDATE(),'A',@contra,@nomUsu,@dir);
+go 
+
+execute A_USUARIO
+
+select*from producto
+
+--PRODUCTO
+create  procedure C_PRODUCTO(
+@id char(8))
+as
+select * from producto where COD=@id
+go
+
+
+
+create procedure M_PRODUCTO(
+@id char(8), @nombre varchar(180), @id_cat int, @pre numeric(7,2)
+)
+as
+update PRODUCTO
+set NOM_PRO=@nombre, PRECIO=@pre , ID_CATEGORIA=@id_cat
+where COD=@id
+go
+
+create proc G_COD_PROD
+as
+begin 
+declare @codprod char(6)
+set @codprod=(select MAX(cod) from producto)
+set @codprod='P'+RIGHT('000'+LTRIM(RIGHT (ISNULL( @codprod,'000'),4)+1),4)
+select @codprod as codem
+end
+go
+
+
+
+create procedure A_PRODUCTO(
+@id char(8),
+@nom varchar(180),
+@id_cat int,
+@pre float,
+@img varchar(50)
+)
+as
+INSERT INTO producto VALUES (@id,@nom,@id_cat,@pre,0,@img,'AD0001',GETDATE(),'A')
+go
+
+create procedure U_LOGIN(
+@tipo varchar(15),
+@contra varchar(30)
+)
+as
+select*from USUARIO where Nombre_de_login=@tipo and CONTRA=@contra
+go
+
+create procedure E_PRODUCTO(
+@id char(8),
+@est char(1)
+)
+as
+update PRODUCTO
+set estado=@est
+where COD=@id
+go
+
+create procedure B_ProdxNom(
+@nom varchar(50)
+)
+as
+select*from PRODUCTO P inner join CATEGORIA c
+on P.ID_CATEGORIA=c.ID where P.estado='A' and P.STOCK>=1 and P.NOM_PRO like (@nom+'%') or c.nombre like (@nom+'%')
+go
+
+create procedure B_ProdxNomADMIN(
+@nom varchar(50)
+)
+as
+select*from PRODUCTO P inner join CATEGORIA c
+on P.ID_CATEGORIA=c.ID where P.NOM_PRO like (@nom+'%') or c.nombre like (@nom+'%')
+go
+
+create procedure M_stock_Prod(
+@id char(8),
+@cant int
+)
+as
+begin
+update PRODUCTO
+set STOCK=(STOCK-@cant)
+where COD=@id
+end
+
+--venta
+create procedure A_VENTA(
+@cod int output,
+@C_USU char(8),
+@dir_usu varchar(100)
+)
+as 
+begin
+select @cod=IsNULL(MAX(codigoVenta),0)+1 from venta
+insert into venta values(@C_USU,getdate(),@dir_usu,'Para Enviar')
+end
+
+
+--detalleventa
+create procedure A_DETALLEVENTA(
+@C_Vent int,
+@C_ProD char(8),
+@cant int,
+@total numeric(7,2)
+)
+as
+insert into detalleventa values(@C_Vent,@C_ProD,@cant,@total)
+
+
+create procedure Venta_del_dia
+as
+begin
+select V.codigoVenta,Concat(U.NOMBRE,' ',U.APELLIDO) as Nombre ,Convert(date,getdate()),sum(D.cantidad) as Nro_Prod_comprados,sum(D.total) as Importe_total from venta V inner join USUARIO U
+on V.Cod_usu=U.COD inner join detalleventa D
+on V.codigoVenta=D.codigoVenta where V.fecha=Convert(date,SYSDATETIME()) 
+group by V.codigoVenta,U.NOMBRE,U.APELLIDO,V.fecha order by sum(D.cantidad) desc
+end
+
+create procedure SP_Cliente_del_Mes(
+@n_mes varchar(15))
+as
+begin
+Set Language spanish
+select Concat(U.NOMBRE,' ',U.APELLIDO) as nombre, sum(D.total) as total  from venta v inner join USUARIO U 
+on v.Cod_usu=U.COD inner join detalleventa D 
+on v.codigoVenta=D.codigoVenta where  datename(month,fecha)=@n_mes
+group by Concat(U.NOMBRE,' ',U.APELLIDO) order by sum(D.total) desc
+end
+
+create procedure SP_Prod_Mas_vendido(
+@F_INI varchar(10),
+@F_FIN varchar(10)
+)
+as
+begin
+select P.NOM_PRO,sum(cantidad) from detalleventa D inner join venta V 
+on D.codigoVenta=V.codigoVenta inner join PRODUCTO P
+on D.codigoProducto=P.COD where V.fecha between @F_INI and @F_FIN
+group by P.NOM_PRO order by sum(cantidad) desc
+end
+
+
+--TB_ROTACION
+create table TB_Rotacion(
+ID_PROD char(8) references PRODUCTO,
+Cantidad_vent int,
+Cantidad_comp int,
+fecha date
+)
+ 
+
+create procedure SP_Ven_Rotacion(
+@id char(8),
+@cant_vent int
+)
+as
+begin
+insert into TB_Rotacion values(@id,@cant_vent,0,getdate())
+end
+go
+ 
+create procedure SP_Compra_Rotacion(
+@id char(8),
+@cant_comp int
+)
+as
+begin
+insert into TB_Rotacion values(@id,0,@cant_comp,getdate())
+update PRODUCTO
+set STOCK=STOCK+@cant_comp
+where COD=@id
+end
+go
+
+
+create procedure SP_His_compra(
+@F_INI varchar(10),
+@F_FIN varchar(10)
+)
+as
+begin
+select P.NOM_PRO,sum(R.Cantidad_comp) as Nro_Compras from TB_Rotacion R inner join PRODUCTO P
+on R.ID_PROD=P.COD where R.Cantidad_comp>=1 and R.fecha between @F_INI and @F_FIN 
+group by P.NOM_PRO order by sum(R.Cantidad_comp) desc
+end
+
+create procedure SP_Prod_Mayor_Movimiento
+as
+begin
+select R.ID_PROD,P.NOM_PRO,sum(R.Cantidad_vent) as Ventas_totales,sum(R.Cantidad_comp) as Compras_totales,sum(R.Cantidad_vent)+sum(R.Cantidad_comp) as total from TB_Rotacion R inner join PRODUCTO P
+on R.ID_PROD=P.COD  
+group by R.ID_PROD,P.NOM_PRO order by total desc
+end
+
+create procedure SP_Pedidos
+as
+begin
+select V.codigoVenta,concat(U.NOMBRE,' ',U.APELLIDO) as nombre,V.fecha,V.Direccion,V.estado from VENTA V inner join USUARIO U
+on V.Cod_usu=U.Cod where V.Estado='Para Enviar' or V.Estado='Para Recoger' order by V.fecha desc
+end
+
+exec SP_Pedidos
+
+
+create procedure SP_DET_PED(
+@cod int
+)
+as
+begin
+select D.codigoVenta,P.NOM_PRO,D.cantidad from detalleventa D inner join PRODUCTO P
+on D.codigoProducto=P.COD where codigoVenta=@cod
+end
+
+create procedure SP_Camb_Est_ped
+(@cod int)
+as
+begin
+update venta
+set Estado='Entregado'
+where codigoVenta=@cod
+end
+
+create procedure SP_PED_Clientes(
+@cod char(8)
+)
+as
+begin
+select V.codigoVenta,concat(U.NOMBRE,' ',U.APELLIDO) as nombre,V.fecha,V.Direccion,V.estado from VENTA V inner join USUARIO U
+on V.Cod_usu=U.Cod where V.Cod_usu=@cod order by V.fecha desc
+end
