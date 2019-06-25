@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Controlador;
 
 
@@ -135,16 +130,16 @@ item.write(archivo_server);
 }catch(Exception e){}
 img=item.getName();
 }
+img=item.getName();
 }
 response.sendRedirect("RegistrarProducto2.jsp?img="+img);
     }
     private void AñadirProducto(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    String codigo=request.getParameter("txtCod");
     String nombre=request.getParameter("txtNom");
     int cat=Integer.parseInt(request.getParameter("Cbx_CAT"));
     float precio=Float.parseFloat(request.getParameter("txtPrecio"));
     String imagen=request.getParameter("txtImagen");
-    Producto p=new Producto(codigo,nombre,cat,precio,imagen);
+    Producto p=new Producto(nombre,cat,precio,imagen);
     boolean rpta=ProductoDB.AñadirProd(p);
     if(rpta=true){
        response.sendRedirect("mensaje.jsp?men=Se registro el producto Correctamente");
@@ -156,17 +151,15 @@ response.sendRedirect("RegistrarProducto2.jsp?img="+img);
        response.sendRedirect("Agrega_categoria.jsp");
     }
     private void AñadirUsuario(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    String cod=request.getParameter("txtCod");
     String nombre=request.getParameter("txtNom");
      String Apellido=request.getParameter("txtApe");
      String Correo=request.getParameter("txtCorreo");
      String Phone=request.getParameter("txtPhone");
      String Direc=request.getParameter("txtDirec");
-     String Nom_USU=request.getParameter("txtNomUsu");
      String Contra=request.getParameter("txtContra");
      
 
-    boolean rpta=UsuarioDB.AgregarUSU(cod, nombre, Apellido, Correo, Phone, Nom_USU, Contra, Direc);
+    boolean rpta=UsuarioDB.AgregarUSU(nombre, Apellido, Correo, Phone, Contra, Direc);
     if(rpta=true){
        response.sendRedirect("mensaje.jsp?men=Usuario Registrado Exitosamente ");
        }else{response.sendRedirect("mensaje.jsp?men=No se pudo Registrar el usuario");}
