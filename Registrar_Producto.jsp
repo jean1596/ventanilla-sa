@@ -1,13 +1,11 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page session="true" %>
 <%@page import="Modelo.CategoriaDB"%>
 <%@page import="Modelo.Categoria"%>
+<%@page import="Modelo.ProductoDB"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="Utils.Conexion"%>
-<%@page import="java.sql.CallableStatement"%>
+<%@page import="Modelo.Producto"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page session="true" %>
 <%
 String usu=null;
 String nom=null;
@@ -100,39 +98,48 @@ cod_usu=(String)sesionOK.getAttribute("codigo");
       <br>
       <br>
       <br>
-        <h2 align="center">Registrar Producto</h2>
-        <br>
-        <br>
-        <form class="form-horizontal" action="Servlet_controlador" method="get">
-            <table border="0" width="350" align="center">
-                <% String imagen=request.getParameter("img");%>
+      <br>
+        <h2 align="center">Cargar Imagen</h2>
+        <table border="0" width="400" align="center">
+            <form action="Servlet_controlador?accion=SubirImagen" enctype="multipart/form-data" method="post" name="formulario">
                 <tr>
-                    <td>Nombre: </td>
-                    <td><input type="text" name="txtNom"  minlength="3" maxlength="40" required /></td>
-                </tr>
-                <tr> 
-                    <td>Categoria: </td>
-                    <td colspan="2">
-                <select name="Cbx_CAT" size="1">
-                <%
-                ArrayList<Categoria> can=CategoriaDB.ListaCategoria();
-                for(Categoria c: can){
-                %>
-                <option value="<%=c.getId()%>"><%=c.getNombre()%></option>
-                <%}%>
-                </select>
-                </td>
+                    <th>Imagen: </th>
+                    <th><input type="file" name="imagen" id="imagen"/></th>
                 </tr>
                 <tr>
-                    <td>Precio: </td>
-                    <td><input type="number" name="txtPrecio" value="1" step="0.1" min="1" max="1500" required /></td>
+                <th colspan="2">
+                    <button type="button" value="Registrar"  id="btn">Cargar Imagen</button>
+                    </th>    
                 </tr>
-                <tr>
-                    <td colspan="5" align="center"><input type="submit" value="Registrar" name="CargarImagen"/></td>
-                </tr>
-                <input type="hidden" name="txtImagen" value="<%=imagen%>"/>
-                <input type="hidden" name="accion" value="RegistrarProducto"/>
-            </table>
-        </form>
+            </form>
+        </table>
+        
+        <script>
+ window.onload=function (){
+                var btn=document.getElementById("btn");
+                btn.onclick=function(){
+                    var imagen=document.getElementById("imagen").files;
+                    if(imagen.length==0){
+                        
+                    alert("Seleccione Una IMAGEN");
+                        break;
+                    }else{
+                         for(x=0;x<imagen.length;x++){
+                             if(imagen[x].type!="image/png" && imagen[x].type!="image/jpg" && imagen[x].type!="image/jpeg" && imagen[x].type!="image/gif"){
+                                 alert("El Archivo "+imagen[x].name+" no es una imagen causita");
+                                 return;
+                             }
+                             if(imagen[x].size > 1024*1024*1){
+                                 alert("El tamaño maximo permitido es 1Mb");
+                                 return;
+                             }
+                         }
+                        
+                    }
+                    document.formulario.submit();
+                }
+                
+            }
+</script>
     </body>
 </html>
