@@ -40,20 +40,20 @@ direc=(String)sesionOK.getAttribute("dir");
             <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
-          <li><a href="Index.jsp">Categoria</a>
+          <li><a href="index.jsp">Catálogo</a></li>
+          <li><a >Categoria</a>
               <ul>
                   <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                   <li><a href="Agrega_categoria.jsp">Añadir Categoria</a></li>
                 <% }
                   ArrayList<Categoria> ca=CategoriaDB.ListaCategoria();
                 for(Categoria c: ca){%>
-                <li><a href="Filtro.jsp?id=<%=c.getId()%>"><%=c.getNombre()%></a></li>
+                  <li ><a href="Filtro.jsp?id=<%=c.getId()%>"><%=c.getNombre()%></a></li>
                   <%}%>
               </ul>
           </li>
@@ -61,19 +61,36 @@ direc=(String)sesionOK.getAttribute("dir");
           
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                 <li><a href="Registrar_Producto.jsp">Registrar producto</a></li>
+                <li><a >Reportes</a>
+                <ul>
+                    <li><a href="Ventas_del_dia.jsp?op=1">Historial de Ventas</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=2">Cliente del mes</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=3">Prod. Más Vendido</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=4">Historial de Compras</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=5">Movimiento de Productos</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=6">Pedidos</a></li>
+                </ul>
+                    </li>
                 <% }
                 %>
-                <%if(sesionOK.getAttribute("perfil")!=null){
+                <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){
                     %>
-                    <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                <li><a href="RegistrarVenta.jsp">Ver Carrito</a></li>
                 <%}%>
                     
       </ul>      
       <ul class="nav navbar-nav navbar-right" >
           <%if(sesionOK.getAttribute("perfil")!=null){
                     %>
-                    <li>
-                    <a class="navbar-brand" href="#"><%out.println("Bienvenido: "+nom);%></a></li>
+                    <li><a  href="#"><%out.println("Bienvenido: "+nom);%></a>
+                        <ul>
+                        <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){%>
+                        
+                            <li><a href="Ventas_del_dia.jsp?op=7&cod=<%=C_USU%>">Mis Pedidos</a></li>
+                        <%}%>
+                        <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                        </ul> 
+                    </li>
                 <%
                 }
                 if(sesionOK.getAttribute("perfil")==null){
@@ -87,7 +104,7 @@ direc=(String)sesionOK.getAttribute("dir");
   </div>
 </nav>
                 <%int cod_ped=Integer.parseInt(request.getParameter("idProd"));%>
-       <form name="xd" align="center"> 
+       <form name="xd" align="center" method="get"> 
                 <br>
             <h2 align="center">Detalles Del Pedido Nro: <%=cod_ped%></h2>
             <br>
@@ -114,7 +131,6 @@ direc=(String)sesionOK.getAttribute("dir");
                 </form>
                 <br>
                 <br>
-                <p align="center"><a href="Ventas_del_dia.jsp?op=6" >Volver a la Pagina Anterior</a><p>
       
       
         </main>
