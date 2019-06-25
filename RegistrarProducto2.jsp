@@ -1,3 +1,5 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page session="true" %>
 <%@page import="Modelo.CategoriaDB"%>
 <%@page import="Modelo.Categoria"%>
 <%@page import="java.util.ArrayList"%>
@@ -5,14 +7,14 @@
 <%@page import="java.sql.ResultSet"%>
 <%@page import="Utils.Conexion"%>
 <%@page import="java.sql.CallableStatement"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page session="true" %>
 <%
 String usu=null;
 String nom=null;
+String cod_usu=null;
 HttpSession sesionOK=request.getSession();
 if(sesionOK.getAttribute("perfil")!=null){
 nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape");
+cod_usu=(String)sesionOK.getAttribute("codigo");        
 }
 %>
 <!DOCTYPE html>
@@ -31,22 +33,57 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
         <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
+          <li><a href="index.jsp">Catálogo</a></li>
+          <li><a >Categoria</a>
+              <ul>
+                  <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
+                  <li><a href="Agrega_categoria.jsp">Añadir Categoria</a></li>
+                <% }
+                  ArrayList<Categoria> ca=CategoriaDB.ListaCategoria();
+                for(Categoria c: ca){%>
+                  <li ><a href="Filtro.jsp?id=<%=c.getId()%>"><%=c.getNombre()%></a></li>
+                  <%}%>
+              </ul>
+          </li>
+          
+          
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
-                <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
-                <% }%>
-                
+                <li><a href="Registrar_Producto.jsp">Registrar producto</a></li>
+                <li><a >Reportes</a>
+                <ul>
+                    <li><a href="Ventas_del_dia.jsp?op=1">Historial de Ventas</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=2">Cliente del mes</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=3">Prod. Más Vendido</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=4">Historial de Compras</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=5">Movimiento de Productos</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=6">Pedidos</a></li>
+                </ul>
+                    </li>
+                <% }
+                %>
+                <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){
+                    %>
+                <li><a href="RegistrarVenta.jsp">Ver Carrito</a></li>
+                <%}%>
+                    
       </ul>      
       <ul class="nav navbar-nav navbar-right" >
           <%if(sesionOK.getAttribute("perfil")!=null){
                     %>
-                    <li>
-                    <a class="navbar-brand" href="#"><%out.println("Bienvenido: "+nom);%></a></li>
+                    <li><a  href="#"><%out.println("Bienvenido: "+nom);%></a>
+                        <ul>
+                        <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){%>
+                        
+                            <li><a href="Ventas_del_dia.jsp?op=7&cod=<%=cod_usu%>">Mis Pedidos</a></li>
+                        <%}%>
+                        <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                        </ul> 
+                    </li>
                 <%
                 }
                 if(sesionOK.getAttribute("perfil")==null){
@@ -67,32 +104,18 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
         <br>
         <form class="form-horizontal" action="Servlet_controlador" method="get">
             <table border="0" width="350" align="center">
-                <%
-                String imagen=request.getParameter("img");
-                String cod=null;
-                try{
-                CallableStatement cs=Conexion.getConexion().prepareCall("execute G_COD_PROD");
-                ResultSet rs=cs.executeQuery();
-                while(rs.next()){
-                cod=rs.getString(1);
-                }
-                }catch(Exception e){}
-                %>
-                <tr>
-                    <td>Codigo: </td>
-                    <td><input type="text" name="txtCod" value="<%=cod%>" readonly/></td>
-                </tr>
+                <% String imagen=request.getParameter("img");%>
                 <tr>
                     <td>Nombre: </td>
-                    <td><input type="text" name="txtNom" placeholder="Entre 3 y 40 caracteres" minlength="3" maxlength="40" required /></td>
+                    <td><input type="text" name="txtNom"  minlength="3" maxlength="40" required /></td>
                 </tr>
                 <tr> 
                     <td>Categoria: </td>
                     <td colspan="2">
                 <select name="Cbx_CAT" size="1">
                 <%
-                ArrayList<Categoria> ca=CategoriaDB.ListaCategoria();
-                for(Categoria c: ca){
+                ArrayList<Categoria> can=CategoriaDB.ListaCategoria();
+                for(Categoria c: can){
                 %>
                 <option value="<%=c.getId()%>"><%=c.getNombre()%></option>
                 <%}%>
