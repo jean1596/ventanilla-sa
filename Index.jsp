@@ -1,5 +1,5 @@
 <%-- 
-    Document   : Indes
+    Document   : indes
     Created on : 23/04/2019, 10:34:16 PM
     Author     : pc01
 --%>
@@ -38,13 +38,13 @@ cod_usu=(String)sesionOK.getAttribute("codigo");
         <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
-          <li><a href="Index.jsp">Categoria</a>
+          <li><a href="index.jsp">Catálogo</a></li>
+          <li><a >Categoria</a>
               <ul>
                   <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                   <li><a href="Agrega_categoria.jsp">Añadir Categoria</a></li>
@@ -59,9 +59,9 @@ cod_usu=(String)sesionOK.getAttribute("codigo");
           
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                 <li><a href="Registrar_Producto.jsp">Registrar producto</a></li>
-                <li><a href="Index.jsp">Reportes</a>
+                <li><a >Reportes</a>
                 <ul>
-                    <li><a href="Ventas_del_dia.jsp?op=1">Ventas de hoy</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=1">Historial de Ventas</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=2">Cliente del mes</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=3">Prod. Más Vendido</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=4">Historial de Compras</a></li>
@@ -71,10 +71,9 @@ cod_usu=(String)sesionOK.getAttribute("codigo");
                     </li>
                 <% }
                 %>
-                <%if(sesionOK.getAttribute("perfil")!=null){
+                <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){
                     %>
                 <li><a href="RegistrarVenta.jsp">Ver Carrito</a></li>
-                    
                 <%}%>
                     
       </ul>      
@@ -84,10 +83,11 @@ cod_usu=(String)sesionOK.getAttribute("codigo");
                     <li><a  href="#"><%out.println("Bienvenido: "+nom);%></a>
                         <ul>
                         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){%>
+                        
                             <li><a href="Ventas_del_dia.jsp?op=7&cod=<%=cod_usu%>">Mis Pedidos</a></li>
                         <%}%>
-                            <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
-                        </ul>
+                        <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                        </ul> 
                     </li>
                 <%
                 }
