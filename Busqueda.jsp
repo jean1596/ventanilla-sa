@@ -10,9 +10,11 @@
 <%
 String usu=null;
 String nom=null;
+String cod_usu=null;
 HttpSession sesionOK=request.getSession();
 if(sesionOK.getAttribute("perfil")!=null){
 nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape");
+cod_usu=(String)sesionOK.getAttribute("codigo");        
 }
 %>
 <html>
@@ -30,39 +32,57 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
         <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
-          <li><a href="Index.jsp">Categoria</a>
+          <li><a href="index.jsp">Catálogo</a></li>
+          <li><a >Categoria</a>
               <ul>
                   <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                   <li><a href="Agrega_categoria.jsp">Añadir Categoria</a></li>
                 <% }
                   ArrayList<Categoria> ca=CategoriaDB.ListaCategoria();
                 for(Categoria c: ca){%>
-                <li><a href="Filtro.jsp?id=<%=c.getId()%>"><%=c.getNombre()%></a></li>
+                  <li ><a href="Filtro.jsp?id=<%=c.getId()%>"><%=c.getNombre()%></a></li>
                   <%}%>
               </ul>
           </li>
+          
+          
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                 <li><a href="Registrar_Producto.jsp">Registrar producto</a></li>
+                <li><a >Reportes</a>
+                <ul>
+                    <li><a href="Ventas_del_dia.jsp?op=1">Historial de Ventas</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=2">Cliente del mes</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=3">Prod. Más Vendido</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=4">Historial de Compras</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=5">Movimiento de Productos</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=6">Pedidos</a></li>
+                </ul>
+                    </li>
                 <% }
                 %>
-                <%if(sesionOK.getAttribute("perfil")!=null){
+                <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){
                     %>
                 <li><a href="RegistrarVenta.jsp">Ver Carrito</a></li>
-                    <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
                 <%}%>
                     
       </ul>      
       <ul class="nav navbar-nav navbar-right" >
           <%if(sesionOK.getAttribute("perfil")!=null){
                     %>
-                    <li>
-                    <a class="navbar-brand" href="#"><%out.println("Bienvenido: "+nom);%></a></li>
+                    <li><a  href="#"><%out.println("Bienvenido: "+nom);%></a>
+                        <ul>
+                        <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){%>
+                        
+                            <li><a href="Ventas_del_dia.jsp?op=7&cod=<%=cod_usu%>">Mis Pedidos</a></li>
+                        <%}%>
+                        <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                        </ul> 
+                    </li>
                 <%
                 }
                 if(sesionOK.getAttribute("perfil")==null){
@@ -119,9 +139,9 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                                 <a class="btn btn-primary" href="ActualizarProducto.jsp?id=<%=p.getCod()%>">Editar</a>
                                 <a class="btn btn-primary" href="Servlet_controlador?id=<%=p.getCod()%>&Est=<%=p.getEstado()%>&accion=CambiarEstado">Cambiar Estado</a>
                                 <%if(p.getStock()==0){%>
-                                <a class="btn alert-warning"   title="Producto Sin Stock">Abastecer</a>
+                                <a class="btn alert-warning" href="Abastecer_Producto.jsp?Id=<%=p.getCod()%>"   title="Producto Sin Stock">Abastecer</a>
                                 <%}else{%>
-                                <a class="btn btn-primary" >Abastecer</a>
+                                <a class="btn btn-primary" href="Abastecer_Producto.jsp?Id=<%=p.getCod()%>"  >Abastecer</a>
                                 <%}%>
                                 
                     <%}else{%>
