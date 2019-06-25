@@ -25,12 +25,12 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
         <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
+          <li><a href="index.jsp">Catálogo</a></li>
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                 <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
                 <% }%>
@@ -65,7 +65,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
             %>
         </h2>
         <h3 align="center">
-            <a href="Index.jsp">Volver a Principal</a>
+            <a href="index.jsp">Volver a Principal</a>
         </h3>
     </body>
 </html>
