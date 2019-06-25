@@ -113,12 +113,11 @@ public class ProductoDB {
     public static boolean AñadirProd(Producto p){
         boolean rpta=false;
         try{
-        CallableStatement cs=Conexion.getConexion().prepareCall("execute A_PRODUCTO ?,?,?,?,?");
-        cs.setString(1, p.getCod());
-        cs.setString(2, p.getNombre());
-        cs.setInt(3, p.getId_cat());
-        cs.setFloat(4, p.getPrecio());
-        cs.setString(5, p.getImagen());
+        CallableStatement cs=Conexion.getConexion().prepareCall("execute A_PRODUCTO ?,?,?,?");
+        cs.setString(1, p.getNombre());
+        cs.setInt(2, p.getId_cat());
+        cs.setFloat(3, p.getPrecio());
+        cs.setString(4, p.getImagen());
         int i=cs.executeUpdate();
         if(i==1){rpta=true;
         }else{rpta=false;}
