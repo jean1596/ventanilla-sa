@@ -16,12 +16,12 @@
         <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
+          <li><a href="index.jsp">Catálogo</a></li>
       </ul>      
       <ul class="nav navbar-nav navbar-right" >
       </ul>
@@ -42,11 +42,11 @@
                 <input type="hidden" name="accion" value="loguin"/>
                 <tr>
                     <td>Usuario: </td>
-                    <td><input type="text" placeholder="Usuario" name="txtUsu" minlength="3" maxlength="20" required/></td>
+                    <td><input type="text" placeholder="Ejemplo@ejemplo.com" name="txtUsu" minlength="3" maxlength="100" required/></td>
                 </tr>
                 <tr>
                     <td>Password: </td>
-                    <td><input type="Password" placeholder="Password" name="txtPsw" minlength="3" maxlength="20" required/></td>
+                    <td><input type="Password" placeholder="Contraseña" name="txtPsw" minlength="3" maxlength="100" required/></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center" ><input type="submit" name="btn" value="Iniciar Sesion"/></td>
