@@ -13,9 +13,11 @@
 <%
 String usu=null;
 String nom=null;
+String cod_usu=null;
 HttpSession sesionOK=request.getSession();
 if(sesionOK.getAttribute("perfil")!=null){
 nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape");
+cod_usu=(String)sesionOK.getAttribute("codigo");        
 }
 %>
 <!DOCTYPE html>
@@ -35,13 +37,13 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
             <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-        <a class="navbar-brand" href="Index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
+        <a class="navbar-brand" href="index.jsp" ><img width="250"  src="img/LOGO_EMPRESA_1.png" ></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="Index.jsp">Catálogo</a></li>
-          <li><a href="Index.jsp">Categoria</a>
+          <li><a href="index.jsp">Catálogo</a></li>
+          <li><a >Categoria</a>
               <ul>
                   <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                   <li><a href="Agrega_categoria.jsp">Añadir Categoria</a></li>
@@ -56,9 +58,9 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
           
         <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Administrador")){%>
                 <li><a href="Registrar_Producto.jsp">Registrar producto</a></li>
-                <li><a href="Index.jsp">Reportes</a>
+                <li><a >Reportes</a>
                 <ul>
-                    <li><a href="Ventas_del_dia.jsp?op=1">Ventas de hoy</a></li>
+                    <li><a href="Ventas_del_dia.jsp?op=1">Historial de Ventas</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=2">Cliente del mes</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=3">Prod. Más Vendido</a></li>
                     <li><a href="Ventas_del_dia.jsp?op=4">Historial de Compras</a></li>
@@ -68,18 +70,24 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                     </li>
                 <% }
                 %>
-                <%if(sesionOK.getAttribute("perfil")!=null){
+                <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){
                     %>
                 <li><a href="RegistrarVenta.jsp">Ver Carrito</a></li>
-                    <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
                 <%}%>
                     
       </ul>      
       <ul class="nav navbar-nav navbar-right" >
           <%if(sesionOK.getAttribute("perfil")!=null){
                     %>
-                    <li>
-                        <a class="navbar-brand" href="#"><%out.println("Bienvenido: "+nom);%></a></li>
+                    <li><a  href="#"><%out.println("Bienvenido: "+nom);%></a>
+                        <ul>
+                        <%if(sesionOK.getAttribute("perfil")!=null && sesionOK.getAttribute("perfil").equals("Cliente")){%>
+                        
+                            <li><a href="Ventas_del_dia.jsp?op=7&cod=<%=cod_usu%>">Mis Pedidos</a></li>
+                        <%}%>
+                        <li><a href="Servlet_logueo?accion=cerrar">Cerrar Sesión</a></li>
+                        </ul> 
+                    </li>
                 <%
                 }
                 if(sesionOK.getAttribute("perfil")==null){
@@ -95,10 +103,14 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 <% int option=Integer.parseInt(request.getParameter("op")); 
                 if(option==1){
                 %>
-                <form name="Rep1">
+                <form name="Rep1" method="get">
             <br>
-            <h2 align="center">Ventas De Hoy</h2>
+            <h2 align="center">Historial de Ventas</h2>
             <br>   
+            <h4 align="center">Ingrese Rango de Fechas: <input type="date" name="f_ini" required=""> a <input type="date" name="F_FIN" required>
+                <input type="hidden" name="op" value="1">
+                <input type="submit" name="btnFechas" value="Ver" >
+            </h4>
             <table border="1" align="center" width="800">
                 <tr align="center" bgcolor="#27E1C2">
                     <td>Codigo Venta</td>
@@ -106,9 +118,15 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                     <td>Fecha</td>
                     <td>Nro_Prod_Comprados</td>
                     <td>Importe_Total</td>
+                    <td>Accion</td>
                 </tr>
+                <%if(request.getParameter("btnFechas")==null){%>
+                <tr align="center"><td colspan="5">No hay Datos</td>  </tr>
                 <%
-                ArrayList<VentaDIA> vent=VentaDiaDB.Venta_Dia();
+                }else if(request.getParameter("btnFechas")!=null){
+                String F_I=request.getParameter("f_ini");
+                String F_F=request.getParameter("F_FIN");
+                ArrayList<VentaDIA> vent=VentaDiaDB.Hist_Ventas(F_I, F_F);
                 for(VentaDIA v: vent){
                     %>
                     <tr align="center">
@@ -117,16 +135,19 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                         <td><%=v.getFecha_c()%></td>
                         <td><%=v.getNro_prod_adquiridos()%></td>
                         <td><%=v.getImporte_total()%></td>
+                        <td><a href="Detalle_Pedido.jsp?idProd=<%=v.getCodigo()%>" title="Ver Detalles Del Pedido"><img width="15"  src="img/Suma.jpg" ></a></td>
+                        
                     </tr>
                 <%
                     }
+                }
                 %>
                 </table>
              </form>
                 <%
                 }else if(option==2){
                 %>
-                <form name="rep2">
+                <form name="rep2" method="get">
                  <br>
             <h2 align="center">Cliente Del Mes</h2>
             <br>
@@ -134,18 +155,18 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
             <h5 align="center">
              Elija un Mes:    
             <select name="CbxMes">
-                <option value="Enero">Enero</option>
-                <option value="Febrero">Febrero</option>
-                <option value="Marzo">Marzo</option>
-                <option value="Abril">Abril</option>
-                <option value="Mayo">Mayo</option>
-                <option value="Junio">Junio</option>
-                <option value="Julio">Julio</option>
-                <option value="Agosto">Agosto</option>
-                <option value="Setiembre">Setiembre</option>
-                <option value="Octubre">Octubre</option>
-                <option value="Noviembre">Noviembre</option>
-                <option value="Diciembre">Diciembre</option>
+                <option value="Enero" >Enero</option>
+                <option value="Febrero" >Febrero</option>
+                <option value="Marzo" >Marzo</option>
+                <option value="Abril" >Abril</option>
+                <option value="Mayo" >Mayo</option>
+                <option value="Junio" >Junio</option>
+                <option value="Julio" >Julio</option>
+                <option value="Agosto" >Agosto</option>
+                <option value="Setiembre" >Setiembre</option>
+                <option value="Octubre" >Octubre</option>
+                <option value="Noviembre" >Noviembre</option>
+                <option value="Diciembre" >Diciembre</option>
             </select>
             <input type="hidden" name="op" value="2">
                 <input type="submit" name="btnMes" value="Ver" >    
@@ -175,7 +196,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 <%}%>
                 </form>
                 <%}else if(option==3){%>
-                <form name="rep3" align="center"> 
+                <form name="rep3" align="center" method="get"> 
                 <br>
             <h2 align="center">Producto Más Vendido</h2>
             <br>   
@@ -208,7 +229,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 <%}%>
                 </form>
                 <%}else if(option==4){%>
-                <form name="rep4" align="center"> 
+                <form name="rep4" align="center"  method="get"> 
                 <br>
             <h2 align="center">Historial de Compras</h2>
             <br>   
@@ -239,7 +260,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 %>
                 </table>
                 <%}%>
-                </form>
+                </form  method="post">
                 <%}else if(option==5){%>
                 <form name="rep4" align="center"> 
                 <br>
@@ -250,8 +271,8 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 <tr align="center" bgcolor="#27E1C2">
                     <td>Codigo</td>
                     <td>Nombre</td>
-                    <td>Total de ventas</td>
-                    <td>Total de compras</td>
+                    <td>Unidades vendidas</td>
+                    <td>Unidades compradas</td>
                     <td>Movimientos totales</td>
                 </tr>
                 <%
@@ -271,7 +292,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 </table>
                 </form>
                 <%}else if(option==6){%>
-                <form name="rep4" align="center" action="Servlet_controlador"> 
+                <form name="rep4" align="center" action="Servlet_controlador"  method="get"> 
                 <br>
             <h2 align="center">Pedidos</h2>
             <br>
@@ -282,6 +303,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                     <td>Nombre cliente</td>
                     <td>Fecha del Pedido</td>
                     <td>Direccion cliente</td>
+                    <td>Telefono</td>
                     <td>Estado</td>
                     <td colspan="2">Accion</td>
                 </tr>
@@ -294,6 +316,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                         <td><%=v.getCodigo()%></td>
                         <td><%=v.getValor()%></td>
                         <td><%=v.getNombre()%></td>
+                        <td><%=v.getValor2()%></td>
                         <td><%=v.getFecha_c()%></td>
                         <td><a href="Detalle_Pedido.jsp?idProd=<%=v.getN1()%>" title="Ver Detalles Del Pedido"><img width="15"  src="img/Suma.jpg" ></a></td>
                         <td><a href="Servlet_controlador?id_Ped=<%=v.getN1()%>&accion=Cambiar_Estado_Pedido" title="Ver Detalles Del Pedido">Entregado</a></td>
@@ -304,7 +327,7 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                 </table>
                 </form>
                 <%}else if(option==7){%>
-                <form name="rep4" align="center" action="Servlet_controlador"> 
+                <form name="rep4" align="center" action="Servlet_controlador"  method="get"> 
                 <br>
             <h2 align="center">Mis Pedidos</h2>
             <br>
@@ -316,10 +339,11 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                     <td>Fecha del Pedido</td>
                     <td>Direccion cliente</td>
                     <td>Estado</td>
+                    <td>Accion</td>
                 </tr>
                 <%
-                    String cod_usu=request.getParameter("cod");
-                ArrayList<VentaDIA> vent=VentaDiaDB.PedidosXcliente(cod_usu);
+                    String cod_u=request.getParameter("cod");
+                ArrayList<VentaDIA> vent=VentaDiaDB.PedidosXcliente(cod_u);
                 for(VentaDIA v: vent){
                     %>
                     <tr align="center">
@@ -328,6 +352,8 @@ nom=(String)sesionOK.getAttribute("nom")+" "+(String)sesionOK.getAttribute("ape"
                         <td><%=v.getValor()%></td>
                         <td><%=v.getNombre()%></td>
                         <td><%=v.getFecha_c()%></td>
+                        <td><a href="Detalle_Pedido.jsp?idProd=<%=v.getN1()%>" title="Ver Detalles Del Pedido"><img width="15"  src="img/Suma.jpg" ></a></td>
+                        
                     </tr>
                 <%
                     }
