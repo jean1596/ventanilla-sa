@@ -59,7 +59,7 @@ public class Servlet_logueo extends HttpServlet {
             sesionOK.setAttribute("codigo", (String)rs.getString(1));
             sesionOK.setAttribute("nom",(String)rs.getString(2));
             sesionOK.setAttribute("ape",(String)rs.getString(3));
-            sesionOK.setAttribute("dir",(String)rs.getString(11));
+            sesionOK.setAttribute("dir",(String)rs.getString(10));
             request.getRequestDispatcher("Index.jsp").forward(request, response);
             
             }else{
